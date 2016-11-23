@@ -16,13 +16,15 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from rest_framework.routers import DefaultRouter
-from denunciasCiudadanas.views import CuentaViewSet, DenunciaViewSet, check_login, login_user, registrar_usuario, verificar_usuario, crear_denuncia, cambiar_estado
+from denunciasCiudadanas.views import MunicipioViewSet, FiltroViewSet, CuentaViewSet, DenunciaViewSet, check_login, login_user, registrar_usuario, verificar_usuario, crear_denuncia, cambiar_estado
 from django.conf.urls.static import static
 from django.conf import settings
 
 router = DefaultRouter()
 router.register(prefix='cuentas', viewset=CuentaViewSet, base_name='micuenta')
 router.register(prefix='denuncias', viewset=DenunciaViewSet, base_name='propietario')
+router.register(prefix='filtro', viewset=FiltroViewSet, base_name='filtroInvestigador')
+router.register(prefix='estadisticas', viewset=MunicipioViewSet, base_name='municipios')
 
 urlpatterns = [
     url(r'^api-auth/', include('rest_framework.urls',
