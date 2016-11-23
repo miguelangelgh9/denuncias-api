@@ -9,6 +9,6 @@ class CuentaSerializer(serializers.ModelSerializer):
 class DenunciaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Denuncia
-        fields=("titulo", "descripcion", "cuenta",
+        fields=("id", "titulo", "descripcion", "cuenta",
                 "categoria", "estado", "prueba", "municipio",
                 "ubicacionGeo", 'ubicacionGeoRef', "fecha")

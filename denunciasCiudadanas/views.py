@@ -169,9 +169,33 @@ def crear_denuncia(request):
                               prueba=prueba, categoria=categoria)
             denuncia.full_clean()
             denuncia.save()
-            mensaje=send_email(usuario.email, "Su denuncia ha sido guardada con extio, si su denuncia es aceptada se le notificara.")
+            mensaje=send_email(usuario.email, "Su denuncia fue recibida y ha sido guardada con extio, si su denuncia es aceptada se le notificara en mensajes posteriores.")
         except:
             mensaje="No se pudo crear la denuncia. Verifique si ha iniciado sesion."
     else:
         mensaje="No se encontro POST data."
+    return HttpResponse(json.dumps(mensaje))
+
+@csrf_exempt
+def cambiar_estado(request):
+    usuario=request.user
+    if request.POST and usuario.is_authenticated():
+        cuenta=Cuenta.objects.get(usuario=usuario)
+        if cuenta.tipo=='1':
+            try:
+                idDenuncia=int(request.POST.get('id'))
+                estado=request.POST.get('estado')
+                denuncia=Denuncia.objects.get(id=idDenuncia)
+                denuncia.estado=estado
+                denuncia.full_clean()
+                denuncia.save()            
+                mensaje=send_email(denuncia.cuenta.usuario.email, "Su denuncia ha cambiado de estado, revise su cuenta para saber mas al respecto.")
+            except:
+                mensaje="Puede ser que no se haya encontrado el id o el estado en el POST, tambien es posible que no exista ese id de denuncia o que el estado enviado no sea valido."
+                
+
+        else:
+            mensaje="Debe ser investigador para cambiar estados"
+    else:
+        mensaje="Debe estar logeado como investigador."
     return HttpResponse(json.dumps(mensaje))

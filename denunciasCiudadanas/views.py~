@@ -10,19 +10,35 @@ from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from denunciasCiudadanas.twoStepVer import RegistrationView, ActivationView
 from django.contrib.auth.decorators import login_required
 from denunciasCiudadanas.email import send_email
+import urllib2
 import json
 
 
-class DenunciaViewSet(viewsets.ModelViewSet):
-    queryset = Denuncia.objects.all()
+
+class DenunciaViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = DenunciaSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    def get_queryset(self):
+        user=self.request.user
+        if user.is_authenticated():
+            cuenta=Cuenta.objects.get(usuario=user)
+            if cuenta.tipo=='1':
+                return Denuncia.objects.exclude(estado='DE')
+            else:
+                return Denuncia.objects.filter(cuenta=cuenta)
+        else:
+            return None
+        
 
-
-class CuentaViewSet(viewsets.ModelViewSet):
-    queryset = Cuenta.objects.all()
+class CuentaViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CuentaSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    def get_queryset(self):
+        user=self.request.user
+        if user.is_authenticated():
+            return Cuenta.objects.filter(usuario=user)
+        else:
+            return None
 
 @csrf_exempt
 def login_user(request):
@@ -75,15 +91,12 @@ def get_client_ip(request):
     else:
         print "returning REMOTE_ADDR"
         ip = request.META.get('REMOTE_ADDR')
-    return ip
+    return str(ip)
 
 def get_ip_info(request):
   ip=get_client_ip(request)
   url='http://ip-api.com/json/'
-  if ip:
-    return json.load(urlopen(url+ip))
-  else:
-    return None
+  return json.load(urllib2.urlopen(url+ip))
 
 @csrf_exempt
 def registrar_usuario(request):
@@ -95,13 +108,15 @@ def registrar_usuario(request):
         email=request.POST.get('email')
         dui=request.POST.get('dui')
         try:
-            cuenta=Cuenta(usuario=usuario, tipo='2', dui=dui)
-            cuenta.full_clean()
-            cuenta.save()
+            #if not Cuenta.objects.get(dui=dui):
+            #    raise ValueError
             usuario=User.objects.create_user(username=username,
                                      first_name=first_name, last_name=last_name,
                                      email=email,password=password,
                                      is_active=False)
+            cuenta=Cuenta(usuario=usuario, tipo='2', dui=dui)
+            cuenta.full_clean()
+            cuenta.save()
             reg=RegistrationView()
             mensaje=RegistrationView.send_activation_email(reg,usuario)+" Revise su correo electronico para verificar su cuenta."
         except:
@@ -127,7 +142,7 @@ def verificar_usuario(request):
 #@login_required
 @csrf_exempt
 def crear_denuncia(request): 
-    if request.POST:
+    if request.POST and request.user.is_authenticated():
         ip_info=get_ip_info(request)
         lat=str(ip_info['lat'])
         lon=str(ip_info['lon'])
@@ -136,12 +151,12 @@ def crear_denuncia(request):
         dep=request.POST.get('departamento')
         mun=request.POST.get('municipio')
         direccion=request.POST.get('direccion')
-        municipio=Municipio.objects.get(id=mun)
-        ubicacionGeo=Departamento.objects.get(id=dep).nombre + ", " + municipio.nombre + ", " + direccion
+        municipio=Municipio.objects.get(id=int(mun))
+        ubicacionGeo=Departamento.objects.get(id=int(dep)).nombre + ", " + municipio.nombre + ", " + direccion
         ubicacionGeoRef="("+lat+","+lon+")"
-        categoria=request.POST.get['categoria']
-        if request.POST.get['prueba']:
-            prueba=request.POST.get['prueba']
+        categoria=request.POST.get('categoria')
+        if request.POST.get('prueba'):
+            prueba=request.POST.get('prueba')
         else:
             prueba=None
 
@@ -154,13 +169,32 @@ def crear_denuncia(request):
                               prueba=prueba, categoria=categoria)
             denuncia.full_clean()
             denuncia.save()
-            send_email(usuario.email, "Su denuncia ha sido guardada con extio, si su denuncia es aceptada se le notificara.")
+            mensaje=send_email(usuario.email, "Su denuncia fue recibida y ha sido guardada con extio, si su denuncia es aceptada se le notificara en mensajes posteriores.")
         except:
             mensaje="No se pudo crear la denuncia. Verifique si ha iniciado sesion."
     else:
         mensaje="No se encontro POST data."
     return HttpResponse(json.dumps(mensaje))
-            
-            
-            
 
+def cambiar_estado(request):
+    usuario=request.user
+    if request.POST and usuario.is_authenticated():
+        cuenta=Cuenta.objects.get(usuario=usuario)
+        if cuenta.tipo=='1':
+            try:
+                idDenuncia=int(request.POST.get('id'))
+                estado=request.POST.get('estado')
+                denuncia=Denuncia.objects.get(id=idDenuncia)
+                denuncia.estado=estado
+                denuncia.full_clean()
+                denuncia.save()            
+                mensaje=send_email(denuncia.cuenta.usuario.email, "Su denuncia ha cambiado de estado, revise su cuenta para saber mas al respecto.")
+            except:
+                mensaje="Puede ser que no se haya encontrado el id o el estado en el POST, tambien es posible que no exista ese id de denuncia o que el estado enviado no sea valido."
+                
+
+        else:
+            mensaje="Debe ser investigador para cambiar estados"
+    else:
+        mensaje="Debe estar logeado como investigador."
+    return HttpResponse(json.dumps(mensaje))

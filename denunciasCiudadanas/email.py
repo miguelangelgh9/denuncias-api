@@ -7,7 +7,7 @@ def send_email(recipient, body):
     gmail_pwd = pwd
     FROM = user
     TO = recipient if type(recipient) is list else [recipient]
-    SUBJECT = "Su denuncia ha sido recibida!"
+    SUBJECT = "Actualizacion sobre el estado de su denuncia!"
     TEXT = body
 
     # Prepare actual message
