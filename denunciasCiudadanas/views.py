@@ -152,7 +152,7 @@ def crear_denuncia(request):
                               prueba=prueba, categoria=categoria)
             denuncia.full_clean()
             denuncia.save()
-            send_email(usuario.email, "Su denuncia ha sido guardada con extio, si su denuncia es aceptada se le notificara.")
+            mensaje=send_email(usuario.email, "Su denuncia ha sido guardada con extio, si su denuncia es aceptada se le notificara.")
         except:
             mensaje="No se pudo crear la denuncia. Verifique si ha iniciado sesion."
     else:
