@@ -93,7 +93,7 @@ def registrar_usuario(request):
         email=request.POST.get('email')
         dui=request.POST.get('dui')
         try:
-            if Cuenta.objects.get(dui=dui):
+            if not Cuenta.objects.get(dui=dui):
                 raise ValueError
             usuario=User.objects.create_user(username=username,
                                      first_name=first_name, last_name=last_name,
