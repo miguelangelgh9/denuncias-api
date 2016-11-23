@@ -158,7 +158,7 @@ def crear_denuncia(request):
         except:
             mensaje="No se pudo crear la denuncia. Verifique si ha iniciado sesion."
     else:
-        mensaje="No se encontro POST data."
+        mensaje="No se encontro POST data o no ha iniciado sesion."
     return HttpResponse(json.dumps(mensaje))
             
             
