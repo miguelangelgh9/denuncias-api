@@ -137,7 +137,7 @@ def crear_denuncia(request):
         municipio=Municipio.objects.get(id=int(mun))
         ubicacionGeo=Departamento.objects.get(id=int(dep)).nombre + ", " + municipio.nombre + ", " + direccion
         ubicacionGeoRef="("+lat+","+lon+")"
-        categoria=request.POST.get['categoria']
+        categoria=request.POST.get('categoria')
         if request.POST.get['prueba']:
             prueba=request.POST.get['prueba']
         else:
