@@ -21,7 +21,11 @@ class DenunciaViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         user=self.request.user
         if user.is_authenticated():
-            return Denuncia.objects.filter(cuenta__usuario=user)
+            cuenta=Cuenta.objects.get(usuario=user)
+            if cuenta.tipo=='1':
+                return Denuncia.objects.exclude(estado='DE')
+            else:
+                return Denuncia.objects.filter(cuenta=cuenta)
         else:
             return None
         
