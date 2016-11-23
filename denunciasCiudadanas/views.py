@@ -93,13 +93,15 @@ def registrar_usuario(request):
         email=request.POST.get('email')
         dui=request.POST.get('dui')
         try:
-            cuenta=Cuenta(usuario=usuario, tipo='2', dui=dui)
-            cuenta.full_clean()
-            cuenta.save()
+            if Cuenta.objects.get(dui=dui):
+                raise ValueError
             usuario=User.objects.create_user(username=username,
                                      first_name=first_name, last_name=last_name,
                                      email=email,password=password,
                                      is_active=False)
+            cuenta=Cuenta(usuario=usuario, tipo='2', dui=dui)
+            cuenta.full_clean()
+            cuenta.save()
             reg=RegistrationView()
             mensaje=RegistrationView.send_activation_email(reg,usuario)+" Revise su correo electronico para verificar su cuenta."
         except:
