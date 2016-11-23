@@ -14,16 +14,27 @@ import urllib2
 import json
 
 
-class DenunciaViewSet(viewsets.ModelViewSet):
-    queryset = Denuncia.objects.all()
+
+class DenunciaViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = DenunciaSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    def get_queryset(self):
+        user=self.request.user
+        if user.is_authenticated():
+            return Denuncia.objects.filter(cuenta__usuario=user)
+        else:
+            return None
+        
 
-
-class CuentaViewSet(viewsets.ModelViewSet):
-    queryset = Cuenta.objects.all()
+class CuentaViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CuentaSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    def get_queryset(self):
+        user=self.request.user
+        if user.is_authenticated():
+            return Cuenta.objects.filter(usuario=user)
+        else:
+            return None
 
 @csrf_exempt
 def login_user(request):
@@ -158,9 +169,5 @@ def crear_denuncia(request):
         except:
             mensaje="No se pudo crear la denuncia. Verifique si ha iniciado sesion."
     else:
-        mensaje="No se encontro POST data o no ha iniciado sesion."
+        mensaje="No se encontro POST data."
     return HttpResponse(json.dumps(mensaje))
-            
-            
-            
-
