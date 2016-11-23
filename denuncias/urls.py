@@ -21,8 +21,8 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 router = DefaultRouter()
-router.register(prefix='cuentas', viewset=CuentaViewSet)
-router.register(prefix='denuncias', viewset=DenunciaViewSet)
+router.register(prefix='cuentas', viewset=CuentaViewSet, base_name='micuenta')
+router.register(prefix='denuncias', viewset=DenunciaViewSet, base_name='propietario')
 
 urlpatterns = [
     url(r'^api-auth/', include('rest_framework.urls',
