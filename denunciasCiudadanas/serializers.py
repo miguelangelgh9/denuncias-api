@@ -10,5 +10,5 @@ class DenunciaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Denuncia
         fields=("titulo", "descripcion", "cuenta",
-                "categoria", "estado", "prueba",
+                "categoria", "estado", "prueba", "municipio",
                 "ubicacionGeo", 'ubicacionGeoRef', "fecha")

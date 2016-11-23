@@ -8,7 +8,6 @@ from urllib2 import urlopen
 import json
 
 def validate_file_extension(value):
-  
   ext = os.path.splitext(value.name)[1]
   valid_extensions = ['.jpg','.png','.bmp','.mp4', '.avi']
   if not ext in valid_extensions:
@@ -29,10 +28,24 @@ class Cuenta(models.Model):
         )
     usuario=models.OneToOneField(User, on_delete=models.CASCADE,primary_key=True)
     tipo=models.CharField(max_length=1, choices=TIPO_DE_CUENTA, default=CIUDADANO,)
+    dui=models.CharField(max_length=20, unique=True)
     def __str__(self):
         return self.usuario.username
-#Falta ver las dos ubicaciones y como hacer que se pueda subir mas de un archivo.
-#Revisar cuando se haga un modelo, creo que se va a tener que dividir algunas clases
+
+class Departamento (models.Model):
+  nombre=models.CharField(max_length=25)
+  def __str__(self):
+    return self.nombre
+
+class Municipio (models.Model):
+  nombre=models.CharField(max_length=50)
+  departamento=models.ForeignKey('Departamento',on_delete=models.CASCADE,)
+  cuentaDenuncia=models.IntegerField(default=0)
+  class Meta:
+    unique_together=(("nombre", "departamento"),)
+  def __str__(self):
+    return self.nombre
+    
 class Denuncia(models.Model):
     """Denuncias Ciudadanas"""
     RECIBIDA = 'RE'
@@ -75,6 +88,7 @@ class Denuncia(models.Model):
     cuenta=models.ForeignKey('Cuenta', on_delete=models.CASCADE,)
     ubicacionGeo=models.CharField(max_length=50)
     ubicacionGeoRef=models.CharField(max_length=50)
+    municipio=models.ForeignKey('Municipio',on_delete=models.CASCADE,)
     prueba=models.FileField(upload_to='pruebas/%Y/%m/%d', blank=True, validators=[validate_file_extension])
     fecha=models.DateTimeField(default=timezone.now)
     estado= models.CharField(max_length=2, choices=ESTADOS_CHOICES, default=RECIBIDA,)

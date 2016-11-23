@@ -10,7 +10,6 @@ from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from denunciasCiudadanas.twoStepVer import RegistrationView, ActivationView
 from django.contrib.auth.decorators import login_required
 from denunciasCiudadanas.email import send_email
-import urllib2
 import json
 
 
@@ -76,12 +75,15 @@ def get_client_ip(request):
     else:
         print "returning REMOTE_ADDR"
         ip = request.META.get('REMOTE_ADDR')
-    return str(ip)
+    return ip
 
 def get_ip_info(request):
   ip=get_client_ip(request)
   url='http://ip-api.com/json/'
-  return json.load(urllib2.urlopen(url+ip))
+  if ip:
+    return json.load(urlopen(url+ip))
+  else:
+    return None
 
 @csrf_exempt
 def registrar_usuario(request):
@@ -125,7 +127,7 @@ def verificar_usuario(request):
 #@login_required
 @csrf_exempt
 def crear_denuncia(request): 
-    if request.POST and request.user.is_authenticated():
+    if request.POST:
         ip_info=get_ip_info(request)
         lat=str(ip_info['lat'])
         lon=str(ip_info['lon'])
@@ -134,8 +136,8 @@ def crear_denuncia(request):
         dep=request.POST.get('departamento')
         mun=request.POST.get('municipio')
         direccion=request.POST.get('direccion')
-        municipio=Municipio.objects.get(id=int(mun))
-        ubicacionGeo=Departamento.objects.get(id=int(dep)).nombre + ", " + municipio.nombre + ", " + direccion
+        municipio=Municipio.objects.get(id=mun)
+        ubicacionGeo=Departamento.objects.get(id=dep).nombre + ", " + municipio.nombre + ", " + direccion
         ubicacionGeoRef="("+lat+","+lon+")"
         categoria=request.POST.get['categoria']
         if request.POST.get['prueba']:
