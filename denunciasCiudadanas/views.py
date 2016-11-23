@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 from denunciasCiudadanas.models import Denuncia, Cuenta, Municipio, Departamento
-from denunciasCiudadanas.serializers import DenunciaSerializer, CuentaSerializer
+from denunciasCiudadanas.serializers import MunicipioSerializer, DenunciaSerializer, CuentaSerializer, FiltroDenunciaSerializer
 from rest_framework import permissions
 from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.models import User
@@ -12,8 +12,6 @@ from django.contrib.auth.decorators import login_required
 from denunciasCiudadanas.email import send_email
 import urllib2
 import json
-
-
 
 class DenunciaViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = DenunciaSerializer
@@ -28,7 +26,6 @@ class DenunciaViewSet(viewsets.ReadOnlyModelViewSet):
                 return Denuncia.objects.filter(cuenta=cuenta)
         else:
             return None
-        
 
 class CuentaViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CuentaSerializer
@@ -37,6 +34,38 @@ class CuentaViewSet(viewsets.ReadOnlyModelViewSet):
         user=self.request.user
         if user.is_authenticated():
             return Cuenta.objects.filter(usuario=user)
+        else:
+            return None
+
+class FiltroViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = FiltroDenunciaSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    def get_queryset(self):
+        user=self.request.user
+        if user.is_authenticated():
+            cuenta=Cuenta.objects.get(usuario=user)
+            if cuenta.tipo=='1':
+                categoria=self.request.GET.get('categoria')
+                estado=self.request.GET.get('estado')
+                return Denuncia.objects.filter(categoria=categoria, estado=estado)
+            else:
+                return None
+        else:
+            return None
+
+class MunicipioViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = MunicipioSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    def get_queryset(self):
+        user=self.request.user
+        if user.is_authenticated():
+            cuenta=Cuenta.objects.get(usuario=user)
+            if cuenta.tipo=='1':
+                #categoria=self.request.GET.get('categoria')
+                departamento=int(self.request.GET.get('departamento','0'))
+                return Municipio.objects.filter(departamento_id=departamento)
+            else:
+                return None
         else:
             return None
 
@@ -139,7 +168,6 @@ def verificar_usuario(request):
         mensaje="No se encontro POST data."
     return HttpResponse(json.dumps(mensaje))
 
-#@login_required
 @csrf_exempt
 def crear_denuncia(request): 
     if request.POST and request.user.is_authenticated():
@@ -169,6 +197,8 @@ def crear_denuncia(request):
                               prueba=prueba, categoria=categoria)
             denuncia.full_clean()
             denuncia.save()
+            municipio.cuentaDenuncia+=1
+            municipio.save()
             mensaje=send_email(usuario.email, "Su denuncia fue recibida y ha sido guardada con extio, si su denuncia es aceptada se le notificara en mensajes posteriores.")
         except:
             mensaje="No se pudo crear la denuncia. Verifique si ha iniciado sesion."

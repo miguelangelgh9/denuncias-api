@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from denunciasCiudadanas.models import Cuenta, Denuncia
+from denunciasCiudadanas.models import Cuenta, Denuncia, Departamento, Municipio
 
 class CuentaSerializer(serializers.ModelSerializer):
     class Meta:
@@ -12,3 +12,11 @@ class DenunciaSerializer(serializers.ModelSerializer):
         fields=("id", "titulo", "descripcion", "cuenta",
                 "categoria", "estado", "prueba", "municipio",
                 "ubicacionGeo", 'ubicacionGeoRef', "fecha")
+
+class FiltroDenunciaSerializer(DenunciaSerializer):
+    model= Denuncia
+
+class MunicipioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Municipio
+        fields = ("id", "nombre", "cuentaDenuncia")
