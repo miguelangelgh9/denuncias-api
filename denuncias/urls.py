@@ -33,6 +33,7 @@ urlpatterns = [
     url(r'^verificar_usuario/', verificar_usuario),
     url(r'^crear_denuncia/', crear_denuncia),
     url(r'^accounts/', include('registration.backends.hmac.urls')),
+    url(r'^admin/', admin.site.urls),
     ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += router.urls
