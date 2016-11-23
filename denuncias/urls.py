@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from rest_framework.routers import DefaultRouter
-from denunciasCiudadanas.views import CuentaViewSet, DenunciaViewSet, check_login, login_user, get_client_ip
+from denunciasCiudadanas.views import CuentaViewSet, DenunciaViewSet, check_login, login_user, registrar_usuario, verificar_usuario, crear_denuncia
 from django.conf.urls.static import static
 from django.conf import settings
 
@@ -29,7 +29,10 @@ urlpatterns = [
                                namespace='rest_framework')),
     url(r'^login/', login_user),
     url(r'^check_login/', check_login),
-    url(r'^ip/', get_client_ip),
+    url(r'^registrarse/', registrar_usuario),
+    url(r'^verificar_usuario/', verificar_usuario),
+    url(r'^crear_denuncia/', crear_denuncia),
+    url(r'^accounts/', include('registration.backends.hmac.urls')),
     ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += router.urls
