@@ -82,9 +82,9 @@ WSGI_APPLICATION = 'denuncias.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'djangogirls',
-        'USER': 'name',
-        'PASSWORD': '',
+        'NAME': 'qodgsvsz',
+        'USER': 'qodgsvsz',
+        'PASSWORD': 'oVBEIxU-iS0XgttMTsrYw08oeCbzPy1B',
         'HOST': 'elmer-02.db.elephantsql.com',
         'PORT': '5432',
     }
