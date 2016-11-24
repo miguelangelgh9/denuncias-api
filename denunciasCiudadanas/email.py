@@ -5,7 +5,7 @@ def send_email(recipient, body):
     pwd="konataizumi"
     gmail_user = user
     gmail_pwd = pwd
-    FROM = user
+    FROM = 'GRUPO 13'
     TO = recipient if type(recipient) is list else [recipient]
     SUBJECT = "Actualizacion sobre el estado de su denuncia!"
     TEXT = body
