@@ -4,3 +4,4 @@ django-cors-headers
 gunicorn
 django-registration
 psycopg2
+djangorestframework-jwt
