@@ -26,7 +26,18 @@ class DenunciaViewSet(viewsets.ReadOnlyModelViewSet):
             else:
                 return Denuncia.objects.filter(cuenta=cuenta)
         else:
-            return None
+            token=self.request.POST.get('token')
+            if token is None:
+                return None
+            else: #USAR EL TOKEN
+                decoded=jwt.decode(token, verify=False)
+                user=User.objects.get(id=int(decoded['user_id']))
+                cuenta=Cuenta.objects.get(usuario=user)
+                if cuenta.tipo=='1':
+                    return Denuncia.objects.exclude(estado='DE')
+                else:
+                    return Denuncia.objects.filter(cuenta=cuenta)
+            
 
 class CuentaViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CuentaSerializer
@@ -36,7 +47,13 @@ class CuentaViewSet(viewsets.ReadOnlyModelViewSet):
         if user.is_authenticated():
             return Cuenta.objects.filter(usuario=user)
         else:
-            return None
+            token=self.request.POST.get('token')
+            if token is None:
+                return None
+            else: #USAR EL TOKEN
+                decoded=jwt.decode(token, verify=False)
+                user=User.objects.get(id=int(decoded['user_id']))
+                return Cuenta.objects.filter(usuario=user)
 
 class FiltroViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = FiltroDenunciaSerializer
@@ -52,7 +69,19 @@ class FiltroViewSet(viewsets.ReadOnlyModelViewSet):
             else:
                 return None
         else:
-            return None
+            token=self.request.POST.get('token')
+            if token is None:
+                return None
+            else: #USAR EL TOKEN
+                decoded=jwt.decode(token, verify=False)
+                user=User.objects.get(id=int(decoded['user_id']))
+                cuenta=Cuenta.objects.get(usuario=user)
+                if cuenta.tipo=='1':
+                    categoria=self.request.GET.get('categoria')
+                    estado=self.request.GET.get('estado')
+                    return Denuncia.objects.filter(categoria=categoria, estado=estado)
+                else:
+                    return None
 
 class MunicipioViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = MunicipioSerializer
@@ -68,7 +97,19 @@ class MunicipioViewSet(viewsets.ReadOnlyModelViewSet):
             else:
                 return None
         else:
-            return None
+            token=self.request.POST.get('token')
+            if token is None:
+                return None
+            else: #USAR EL TOKEN
+                decoded=jwt.decode(token, verify=False)
+                user=User.objects.get(id=int(decoded['user_id']))
+                cuenta=Cuenta.objects.get(usuario=user)
+                if cuenta.tipo=='1':
+                    #categoria=self.request.GET.get('categoria')
+                    departamento=int(self.request.GET.get('departamento','0'))
+                    return Municipio.objects.filter(departamento_id=departamento)
+                else:
+                    return None
 
 class DepartamentoViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = DepartamentoSerializer
@@ -266,10 +307,28 @@ def cambiar_estado(request):
                 mensaje=send_email(denuncia.cuenta.usuario.email, "Su denuncia ha cambiado de estado, revise su cuenta para saber mas al respecto.")
             except:
                 mensaje="Puede ser que no se haya encontrado el id o el estado en el POST, tambien es posible que no exista ese id de denuncia o que el estado enviado no sea valido."
-                
-
         else:
             mensaje="Debe ser investigador para cambiar estados"
     else:
-        mensaje="Debe estar logeado como investigador."
+        token=request.POST.get('token')
+        if token is None:
+            mensaje="No se encontro token"
+        else: #USAR EL TOKEN
+            decoded=jwt.decode(token, verify=False)
+            usuario=User.objects.get(id=int(decoded['user_id']))
+            cuenta=Cuenta.objects.get(usuario=usuario)
+            if cuenta.tipo=='1':
+                try:
+                    idDenuncia=int(request.POST.get('id'))
+                    estado=request.POST.get('estado')
+                    denuncia=Denuncia.objects.get(id=idDenuncia)
+                    denuncia.estado=estado
+                    denuncia.full_clean()
+                    denuncia.save()            
+                    mensaje=send_email(denuncia.cuenta.usuario.email, "Su denuncia ha cambiado de estado, revise su cuenta para saber mas al respecto.")
+                except:
+                    mensaje="Puede ser que no se haya encontrado el id o el estado en el POST, tambien es posible que no exista ese id de denuncia o que el estado enviado no sea valido."
+            else:
+                mensaje="Debe ser investigador para cambiar estados"
+            #mensaje="Debe estar logeado como investigador."
     return HttpResponse(json.dumps(mensaje))
