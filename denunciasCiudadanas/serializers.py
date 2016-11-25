@@ -20,3 +20,15 @@ class MunicipioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Municipio
         fields = ("id", "nombre", "cuentaDenuncia")
+
+class DepartamentoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Departamento
+        fields = ('id', 'nombre')
+
+class DepMunSerializer(serializers.ModelSerializer):
+    departamento=DepartamentoSerializer()
+    class Meta:
+        model = Municipio
+        fields = ('id', 'nombre', 'departamento')
+        

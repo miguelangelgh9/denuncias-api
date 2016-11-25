@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 from denunciasCiudadanas.models import Denuncia, Cuenta, Municipio, Departamento
-from denunciasCiudadanas.serializers import MunicipioSerializer, DenunciaSerializer, CuentaSerializer, FiltroDenunciaSerializer
+from denunciasCiudadanas.serializers import DepMunSerializer, DepartamentoSerializer, MunicipioSerializer, DenunciaSerializer, CuentaSerializer, FiltroDenunciaSerializer
 from rest_framework import permissions
 from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.models import User
@@ -68,6 +68,17 @@ class MunicipioViewSet(viewsets.ReadOnlyModelViewSet):
                 return None
         else:
             return None
+
+class DepartamentoViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = DepartamentoSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    queryset=Departamento.objects.all()
+
+class DepMunViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = DepMunSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    queryset=Municipio.objects.all()
+    
 
 @csrf_exempt
 def login_user(request):
@@ -201,9 +212,9 @@ def crear_denuncia(request):
             municipio.save()
             mensaje=send_email(usuario.email, "Su denuncia fue recibida y ha sido guardada con extio, si su denuncia es aceptada se le notificara en mensajes posteriores.")
         except:
-            mensaje="No se pudo crear la denuncia. Verifique si ha iniciado sesion."
+            mensaje="Algo salio mal, asegurese de enviar los datos correctos: titulo, descripcion, departamento, muncipio, direccion, categoria y prueba."
     else:
-        mensaje="No se encontro POST data."
+        mensaje="No se encontro POST data, asegurese de iniciar sesion."
     return HttpResponse(json.dumps(mensaje))
 
 @csrf_exempt
