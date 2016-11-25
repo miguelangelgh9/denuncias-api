@@ -19,6 +19,7 @@ from rest_framework.routers import DefaultRouter
 from denunciasCiudadanas.views import DepMunViewSet, DepartamentoViewSet, MunicipioViewSet, FiltroViewSet, CuentaViewSet, DenunciaViewSet, check_login, login_user, registrar_usuario, verificar_usuario, crear_denuncia, cambiar_estado
 from django.conf.urls.static import static
 from django.conf import settings
+from rest_framework_jwt.views import obtain_jwt_token
 
 router = DefaultRouter()
 router.register(prefix='cuentas', viewset=CuentaViewSet, base_name='micuenta')
@@ -39,6 +40,7 @@ urlpatterns = [
     url(r'^cambiar_estado/', cambiar_estado),
     url(r'^accounts/', include('registration.backends.hmac.urls')),
     url(r'^admin/', admin.site.urls),
+    url(r'^api-token-auth/', obtain_jwt_token),
     ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += router.urls
