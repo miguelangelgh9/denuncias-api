@@ -12,6 +12,7 @@ from django.contrib.auth.decorators import login_required
 from denunciasCiudadanas.email import send_email
 import urllib2
 import json
+import jwt
 
 class DenunciaViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = DenunciaSerializer
@@ -214,7 +215,39 @@ def crear_denuncia(request):
         except:
             mensaje="Algo salio mal, asegurese de enviar los datos correctos: titulo, descripcion, departamento, muncipio, direccion, categoria y prueba."
     else:
-        mensaje="No se encontro POST data, asegurese de iniciar sesion."
+        token=request.POST.get('token')
+        if token is None:
+            mensaje="No se encontro POST data, asegurese de iniciar sesion."
+        else: #USAR EL TOKEN
+            ip_info=get_ip_info(request)
+            lat=str(ip_info['lat'])
+            lon=str(ip_info['lon'])
+            titulo=request.POST.get('titulo')
+            descripcion=request.POST.get('descripcion')
+            dep=request.POST.get('departamento')
+            mun=request.POST.get('municipio')
+            direccion=request.POST.get('direccion')
+            municipio=Municipio.objects.get(id=int(mun))
+            ubicacionGeo=Departamento.objects.get(id=int(dep)).nombre + ", " + municipio.nombre + ", " + direccion
+            ubicacionGeoRef="("+lat+","+lon+")"
+            categoria=request.POST.get('categoria')
+            prueba=request.POST.get('prueba')
+            try:
+                decoded=jwt.decode(token, verify=False)
+                usuario=User.objects.get(id=int(decoded['user_id']))
+                cuenta=Cuenta.objects.get(usuario=usuario)
+                denuncia=Denuncia(titulo=titulo, descripcion=descripcion,
+                                  cuenta=cuenta, ubicacionGeo=ubicacionGeo,
+                                  ubicacionGeoRef=ubicacionGeoRef, municipio=municipio,
+                                  prueba=prueba, categoria=categoria)
+                denuncia.full_clean()
+                denuncia.save()
+                municipio.cuentaDenuncia+=1
+                municipio.save()
+                mensaje=send_email(usuario.email, "Su denuncia fue recibida y ha sido guardada con extio, si su denuncia es aceptada se le notificara en mensajes posteriores.")
+            except:
+                mensaje="Algo salio mal, asegurese de enviar los datos correctos, puede ser que el token haya sido incorrecto."
+            #mensaje="No se encontro POST data, asegurese de iniciar sesion."
     return HttpResponse(json.dumps(mensaje))
 
 @csrf_exempt
