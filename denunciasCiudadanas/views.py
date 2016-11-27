@@ -16,7 +16,7 @@ import jwt
 
 class DenunciaViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = DenunciaSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (permissions.AllowAny,)
     def get_queryset(self):
         user=self.request.user
         if user.is_authenticated():
@@ -41,7 +41,7 @@ class DenunciaViewSet(viewsets.ReadOnlyModelViewSet):
 
 class CuentaViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CuentaSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (permissions.AllowAny,)
     def get_queryset(self):
         user=self.request.user
         if user.is_authenticated():
@@ -57,7 +57,7 @@ class CuentaViewSet(viewsets.ReadOnlyModelViewSet):
 
 class FiltroViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = FiltroDenunciaSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (permissions.AllowAny,)
     def get_queryset(self):
         user=self.request.user
         if user.is_authenticated():
@@ -85,7 +85,7 @@ class FiltroViewSet(viewsets.ReadOnlyModelViewSet):
 
 class MunicipioViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = MunicipioSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (permissions.AllowAny,)
     def get_queryset(self):
         user=self.request.user
         if user.is_authenticated():
@@ -113,12 +113,12 @@ class MunicipioViewSet(viewsets.ReadOnlyModelViewSet):
 
 class DepartamentoViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = DepartamentoSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (permissions.AllowAny,)
     queryset=Departamento.objects.all()
 
 class DepMunViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = DepMunSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (permissions.AllowAny,)
     queryset=Municipio.objects.all()
     
 
