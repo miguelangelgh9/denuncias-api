@@ -1,10 +1,17 @@
 from rest_framework import serializers
+from django.contrib.auth.models import User
 from denunciasCiudadanas.models import Cuenta, Denuncia, Departamento, Municipio
 
+class UsuarioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=User
+        fields=("username", "first_name", "last_name", "email")
+
 class CuentaSerializer(serializers.ModelSerializer):
+    usuario=UsuarioSerializer()
     class Meta:
         model = Cuenta
-        fields=("usuario_id", "tipo", "dui")
+        fields=("usuario_id", "usuario", "tipo", "dui")
 
 class DenunciaSerializer(serializers.ModelSerializer):
     class Meta:
