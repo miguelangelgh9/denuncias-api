@@ -42,6 +42,7 @@ class DenunciaViewSet(viewsets.ReadOnlyModelViewSet):
 class CuentaViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CuentaSerializer
     permission_classes = (permissions.AllowAny,)
+    http_method_names = ['get', 'post', 'head', 'options']
     def get_queryset(self):
         user=self.request.user
         if user.is_authenticated():
