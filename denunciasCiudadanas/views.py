@@ -39,7 +39,7 @@ class DenunciaViewSet(viewsets.ModelViewSet):
                     return Denuncia.objects.filter(cuenta=cuenta)
             
 
-class CuentaViewSet(viewsets.GenericViewSet):
+class CuentaViewSet(viewsets.ModelViewSet):
     serializer_class = CuentaSerializer
     permission_classes = (permissions.AllowAny,)
     def get_queryset(self):
