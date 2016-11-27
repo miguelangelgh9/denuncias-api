@@ -47,7 +47,7 @@ class CuentaViewSet(viewsets.ReadOnlyModelViewSet):
         if user.is_authenticated():
             return Cuenta.objects.filter(usuario=user)
         else:
-            token=self.request.META.get('token')
+            token=self.request.META.get('HTTP_TOKEN')
             if token is None:
                 return None
             else: #USAR EL TOKEN
