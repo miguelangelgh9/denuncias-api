@@ -14,7 +14,7 @@ import urllib2
 import json
 import jwt
 
-class DenunciaViewSet(viewsets.ModelViewSet):
+class DenunciaViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = DenunciaSerializer
     permission_classes = (permissions.AllowAny,)
     def get_queryset(self):
@@ -39,7 +39,7 @@ class DenunciaViewSet(viewsets.ModelViewSet):
                     return Denuncia.objects.filter(cuenta=cuenta)
             
 
-class CuentaViewSet(viewsets.ModelViewSet):
+class CuentaViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CuentaSerializer
     permission_classes = (permissions.AllowAny,)
     def get_queryset(self):
@@ -47,7 +47,7 @@ class CuentaViewSet(viewsets.ModelViewSet):
         if user.is_authenticated():
             return Cuenta.objects.filter(usuario=user)
         else:
-            token=self.request.POST.get('token')
+            token=self.request.META.get('token')
             if token is None:
                 return None
             else: #USAR EL TOKEN
@@ -55,7 +55,7 @@ class CuentaViewSet(viewsets.ModelViewSet):
                 user=User.objects.get(id=int(decoded['user_id']))
                 return Cuenta.objects.filter(usuario=user)
 
-class FiltroViewSet(viewsets.ModelViewSet):
+class FiltroViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = FiltroDenunciaSerializer
     permission_classes = (permissions.AllowAny,)
     def get_queryset(self):
@@ -83,7 +83,7 @@ class FiltroViewSet(viewsets.ModelViewSet):
                 else:
                     return None
 
-class MunicipioViewSet(viewsets.ModelViewSet):
+class MunicipioViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = MunicipioSerializer
     permission_classes = (permissions.AllowAny,)
     def get_queryset(self):
@@ -111,12 +111,12 @@ class MunicipioViewSet(viewsets.ModelViewSet):
                 else:
                     return None
 
-class DepartamentoViewSet(viewsets.ModelViewSet):
+class DepartamentoViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = DepartamentoSerializer
     permission_classes = (permissions.AllowAny,)
     queryset=Departamento.objects.all()
 
-class DepMunViewSet(viewsets.ModelViewSet):
+class DepMunViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = DepMunSerializer
     permission_classes = (permissions.AllowAny,)
     queryset=Municipio.objects.all()
