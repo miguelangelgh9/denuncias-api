@@ -26,7 +26,7 @@ class DenunciaViewSet(viewsets.ReadOnlyModelViewSet):
             else:
                 return Denuncia.objects.filter(cuenta=cuenta)
         else:
-            token=self.request.POST.get('token')
+            token=self.request.META.get('HTTP_TOKEN')
             if token is None:
                 return None
             else: #USAR EL TOKEN
@@ -69,7 +69,7 @@ class FiltroViewSet(viewsets.ReadOnlyModelViewSet):
             else:
                 return None
         else:
-            token=self.request.POST.get('token')
+            token=self.request.META.get('HTTP_TOKEN')
             if token is None:
                 return None
             else: #USAR EL TOKEN
@@ -97,7 +97,7 @@ class MunicipioViewSet(viewsets.ReadOnlyModelViewSet):
             else:
                 return None
         else:
-            token=self.request.POST.get('token')
+            token=self.request.META.get('HTTP_TOKEN')
             if token is None:
                 return None
             else: #USAR EL TOKEN
