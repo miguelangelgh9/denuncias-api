@@ -236,11 +236,7 @@ def crear_denuncia(request):
         ubicacionGeo=Departamento.objects.get(id=int(dep)).nombre + ", " + municipio.nombre + ", " + direccion
         ubicacionGeoRef="("+lat+","+lon+")"
         categoria=request.POST.get('categoria')
-        if request.POST.get('prueba'):
-            prueba=request.POST.get('prueba')
-        else:
-            prueba=None
-
+        prueba=request.FILES.get('prueba')
         try:
             usuario=request.user
             cuenta=Cuenta.objects.get(usuario=usuario)
@@ -272,7 +268,7 @@ def crear_denuncia(request):
             ubicacionGeo=Departamento.objects.get(id=int(dep)).nombre + ", " + municipio.nombre + ", " + direccion
             ubicacionGeoRef="("+lat+","+lon+")"
             categoria=request.POST.get('categoria')
-            prueba=request.POST.get('prueba')
+            prueba=request.FILES.get('prueba')
             try:
                 decoded=jwt.decode(token, verify=False)
                 usuario=User.objects.get(id=int(decoded['user_id']))
