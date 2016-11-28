@@ -311,7 +311,7 @@ def cambiar_estado(request):
         else:
             mensaje="Debe ser investigador para cambiar estados"
     else:
-        token=request.POST.get('token')
+        token=request.META.get('HTTP_TOKEN')
         if token is None:
             mensaje="No se encontro token"
         else: #USAR EL TOKEN
