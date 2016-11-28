@@ -257,7 +257,7 @@ def crear_denuncia(request):
         except:
             mensaje="Algo salio mal, asegurese de enviar los datos correctos: titulo, descripcion, departamento, muncipio, direccion, categoria y prueba."
     else:
-        token=request.POST.get('token')
+        token=request.META.get('HTTP_TOKEN')
         if token is None:
             mensaje="No se encontro POST data, asegurese de iniciar sesion."
         else: #USAR EL TOKEN
