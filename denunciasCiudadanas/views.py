@@ -52,17 +52,13 @@ class CuentaViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CuentaSerializer
     permission_classes = (permissions.AllowAny,)
     def get_queryset(self):
-        user=self.request.user
-        if user.is_authenticated():
+        token=self.request.META.get('HTTP_TOKEN')
+        if token is None:
+            return None
+        else: #USAR EL TOKEN
+            decoded=jwt.decode(token, verify=False)
+            user=User.objects.get(id=int(decoded['user_id']))
             return Cuenta.objects.filter(usuario=user)
-        else:
-            token=self.request.META.get('HTTP_TOKEN')
-            if token is None:
-                return None
-            else: #USAR EL TOKEN
-                decoded=jwt.decode(token, verify=False)
-                user=User.objects.get(id=int(decoded['user_id']))
-                return Cuenta.objects.filter(usuario=user)
 
 class FiltroViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = FiltroDenunciaSerializer
