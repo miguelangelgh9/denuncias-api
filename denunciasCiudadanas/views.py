@@ -44,7 +44,7 @@ class DenunciaActualViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         denuncia=self.request.GET.get('id')
         if denuncia is not None:
-            return Denuncia.objects.get(id=int(denuncia))
+            return Denuncia.objects.filter(id=int(denuncia))
         else:
             return None
         
