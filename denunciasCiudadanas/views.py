@@ -43,7 +43,7 @@ class DenunciaActualViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = (permissions.AllowAny,)
     def get_queryset(self):
         denuncia=self.request.GET.get('id')
-        if denuncia is not None and isinstance(denuncia,int):
+        if denuncia is not None:
             return Denuncia.objects.get(id=int(denuncia))
         else:
             return None
