@@ -39,3 +39,5 @@ class DepMunSerializer(serializers.ModelSerializer):
         model = Municipio
         fields = ('id', 'nombre', 'departamento')
         
+class DenunciaActualSerializer(DenunciaSerializer):
+    model=Denuncia
