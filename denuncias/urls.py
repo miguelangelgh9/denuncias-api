@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from rest_framework.routers import DefaultRouter
-from denunciasCiudadanas.views import DepMunViewSet, DepartamentoViewSet, MunicipioViewSet, FiltroViewSet, CuentaViewSet, DenunciaViewSet, check_login, login_user, registrar_usuario, verificar_usuario, crear_denuncia, cambiar_estado
+from denunciasCiudadanas.views import DenunciaActualViewSet, DepMunViewSet, DepartamentoViewSet, MunicipioViewSet, FiltroViewSet, CuentaViewSet, DenunciaViewSet, check_login, login_user, registrar_usuario, verificar_usuario, crear_denuncia, cambiar_estado
 from django.conf.urls.static import static
 from django.conf import settings
 from rest_framework_jwt.views import obtain_jwt_token
@@ -26,6 +26,7 @@ router.register(prefix='cuentas', viewset=CuentaViewSet, base_name='micuenta')
 router.register(prefix='denuncias', viewset=DenunciaViewSet, base_name='propietario')
 router.register(prefix='filtro', viewset=FiltroViewSet, base_name='filtroInvestigador')
 router.register(prefix='estadisticas', viewset=MunicipioViewSet, base_name='municipios')
+router.register(prefix='denuncia', viewset=DenunciaActualViewSet, base_name='denunciaactual')
 router.register(prefix='departamentos', viewset=DepartamentoViewSet)
 router.register(prefix='municipios', viewset=DepMunViewSet)
 
