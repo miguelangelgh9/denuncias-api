@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 from denunciasCiudadanas.models import Denuncia, Cuenta, Municipio, Departamento
-from denunciasCiudadanas.serializers import DepMunSerializer, DepartamentoSerializer, MunicipioSerializer, DenunciaSerializer, CuentaSerializer, FiltroDenunciaSerializer
+from denunciasCiudadanas.serializers import DenunciaActualSerializer, DepMunSerializer, DepartamentoSerializer, MunicipioSerializer, DenunciaSerializer, CuentaSerializer, FiltroDenunciaSerializer
 from rest_framework import permissions
 from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.models import User
@@ -37,6 +37,13 @@ class DenunciaViewSet(viewsets.ReadOnlyModelViewSet):
                     return Denuncia.objects.exclude(estado='DE')
                 else:
                     return Denuncia.objects.filter(cuenta=cuenta)
+                
+class DenunciaActualViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = DenunciaActualSerializer
+    permission_classes = (permissions.AllowAny,)
+    def get_queryset(self):
+        denuncia=self.request.GET.get('id')
+        return Denuncia.objects.get(id=int(denuncia))
             
 
 class CuentaViewSet(viewsets.ReadOnlyModelViewSet):
