@@ -2,7 +2,7 @@
 def send_email(recipient, body):
     import smtplib
     user="too115noreply@gmail.com"
-    pwd="konataizumi"
+    pwd="CONTRASEÑA"
     gmail_user = user
     gmail_pwd = pwd
     FROM = 'GRUPO 13'
