@@ -85,7 +85,7 @@ class RegistrationView(BaseRegistrationView):
         """
         activation_key = self.get_activation_key(user)
         gmail_user = "too115noreply@gmail.com"
-        gmail_pwd = "konataizumi"
+        gmail_pwd = "CONTRASEÑA"
         FROM = "GRUPO 13"
         TO = user.email
         SUBJECT = "Email de verificacion para nueva cuenta en sistema de denuncias"
